@@ -9,9 +9,9 @@ namespace homework_1
             _a = a;
         }
         
-        public Location Route(string good)
+        public Location Route(string goods)
         {
-            return good == null ? null : _a;
+            return goods == null ? null : _a;
         }
     }
 }

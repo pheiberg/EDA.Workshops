@@ -26,7 +26,7 @@ namespace homework_1
                 }
                 foreach (var vehicle in vehicles)
                 {
-                    vehicle.Deliver();
+                    vehicle.Move();
                 }
 
                 time++;

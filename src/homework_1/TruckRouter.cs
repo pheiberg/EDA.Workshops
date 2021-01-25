@@ -11,9 +11,9 @@ namespace homework_1
             _b = b;
         }
         
-        public Location Route(string good)
+        public Location Route(string goods)
         {
-            return good switch
+            return goods switch
             {
                 null => null,
                 "A" => _port,

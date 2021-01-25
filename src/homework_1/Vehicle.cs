@@ -1,5 +1,3 @@
-using System;
-
 namespace homework_1
 {
 
@@ -11,65 +9,104 @@ namespace homework_1
         {
             _router = router;
             Name = name;
-            Origin = origin;
+            State = new ReadyState(origin);
+        }
+
+        private VehicleState State { get; set; }
+        public string Name { get; }
+
+        public void Move()
+        {
+            State = State.Move();
         }
         
-        public VehicleState State { get; private set; }
-        public string Content { get; private set; }
-        public Location Destination { get; private set; }
-        public int Duration { get; private set; }
-        public Location Origin { get; }
-        public string Name { get; }
-        
-        public void Deliver()
+        public void Load()
         {
-            switch (State)
+            State = State.Load(_router);
+        }
+
+        private abstract class VehicleState
+        {
+            protected Location Origin { get; init; }
+            
+            public abstract VehicleState Load(IRouter router);
+            public abstract VehicleState Move();
+        }
+
+        private class DrivingState : VehicleState
+        {
+            private string Content { get; }
+            private Location Destination { get; }
+            private int Duration { get; }
+            
+            public DrivingState(Location origin, Location destination, int duration, string content)
             {
-                case VehicleState.Driving:
-                {
-                    Duration--;
-                    if (Duration == 0)
-                    {
-                        Unload();
-                    }
+                Duration = duration;
+                Origin = origin;
+                Destination = destination;
+                Content = content;
+            }
+            
+            public override VehicleState Load(IRouter router)
+            {
+                return this;
+            }
 
-                    break;
-                }
-                case VehicleState.Returning:
-                {
-                    Duration--;
-                    if (Duration == 0)
-                    {
-                        State = VehicleState.Ready;
-                    }
+            public override VehicleState Move()
+            {
+                if (Duration - 1 != 0) 
+                    return new DrivingState(Origin, Destination, Duration - 1, Content);
+                
+                Destination.DropOff(Content);
+                return new ReturningState(Origin, Destination.Duration);
+            }
+        }
 
-                    break;
-                }
+        private class ReadyState : VehicleState
+        {
+            public ReadyState(Location origin)
+            {
+                Origin = origin;
+            }
+            
+            public override VehicleState Load(IRouter router)
+            {
+                var content = Origin.PickUp();
+                if (content == null)
+                    return this;
+                
+                var destination = router.Route(content);
+                return new DrivingState(Origin, destination, destination.Duration, content);
+            }
+
+            public override VehicleState Move()
+            {
+                return this;
             }
         }
         
-        private void Unload()
+        private class ReturningState : VehicleState
         {
-            Destination.DropOff(Content);
-            Content = null;
-            State = VehicleState.Returning;
-            Duration = Destination.Duration;
-            Destination = null;
-        }
-
-        public void Load()
-        {
-            if (State != VehicleState.Ready)
-                return;
+            private int Duration { get; }
             
-            Content = Origin.PickUp();
-            Destination = _router.Route(Content);
+            public ReturningState(Location origin, int duration)
+            {
+                Duration = duration;
+                Origin = origin;
+            }
+            
+            public override VehicleState Load(IRouter router)
+            {
+                return this;
+            }
 
-            if (Content == null)
-                return;
-
-            Duration = Destination.Duration;
-            State = VehicleState.Driving;
+            public override VehicleState Move()
+            {
+                if (Duration - 1 == 0)
+                    return new ReadyState(Origin);
+                
+                return new ReturningState(Origin, Duration - 1);
+            }
         }
     }
 }

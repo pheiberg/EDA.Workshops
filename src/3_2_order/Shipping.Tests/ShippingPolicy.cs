@@ -30,10 +30,19 @@ namespace Shipping.Tests
     public static class OrderBehavior
     {
         public static IEnumerable<IEvent> Handle(this Order order, CompletePayment command)
-            => new[] { new PaymentComplete() };
+        {
+            yield return new PaymentRecieved();
+            if (order.Packed)
+                yield return new GoodsShipped();
+        }
+            
 
         public static IEnumerable<IEvent> Handle(this Order order, CompletePacking command)
-            => new[] { new PackingComplete() };
+        {
+            yield return new PackingComplete();
+            if (order.Payed)
+                yield return new GoodsShipped();
+        }
     }
 
     public class Order
@@ -43,8 +52,21 @@ namespace Shipping.Tests
 
         public Order When(IEvent @event) => this;
 
-        public Order When(PaymentRecieved @event) => this;
-        public Order When(GoodsPicked @event) => this;
-
+        public Order When(PaymentRecieved @event)
+        {
+            return new Order
+            {
+                Payed = true,
+                Packed = Packed
+            };
+        }
+        public Order When(GoodsPicked @event)
+        {
+            return new Order
+            {
+                Payed = Payed,
+                Packed = true
+            };
+        }
     }
 }
