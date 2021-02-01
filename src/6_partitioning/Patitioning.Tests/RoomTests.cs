@@ -25,7 +25,7 @@ namespace Patitioning.Tests
             //Then
             var checkedin = store.GetCheckedInRoomIds();
 
-            Assert.True(checkedin.Count() == 1);
+            Assert.True(checkedin.Length == 1);
             Assert.True(checkedin.First() == "102");
         }
 
@@ -47,10 +47,10 @@ namespace Patitioning.Tests
             store.Append(history);
 
             //Then
-            var checkedin = store.GetRoomsToClean();
+            var roomsToClean = store.GetRoomsToClean();
 
-            Assert.True(checkedin.Count() == 1);
-            Assert.True(checkedin.First() == "205");
+            Assert.True(roomsToClean.Length == 1);
+            Assert.True(roomsToClean.First() == "205");
         }
     }
 }

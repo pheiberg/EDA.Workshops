@@ -14,14 +14,13 @@ namespace Query.Tests
             var gameId2 = Guid.NewGuid();
 
             //GIVEN
-            app.Given(new IEvent[] {
+            app.Given(
                 new GameCreated { GameId = gameId, PlayerId = "alex@rps.com", Rounds = 1, Title = "Game #1" },
                 new GameStarted { GameId = gameId, PlayerId = "sue@rps.com" },
                 new GameEnded { GameId = gameId },
                 new GameCreated { GameId = gameId2, PlayerId = "sue@rps.com", Rounds = 1, Title = "Game #2" },
                 new GameStarted { GameId = gameId2, PlayerId = "joe@rps.com" },
-                new GameEnded { GameId = gameId2 }
-            });
+                new GameEnded { GameId = gameId2 });
 
             //WHEN
             var gameView = await app.QueryAsync(new GameQuery { GameId = gameId2 });
