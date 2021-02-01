@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace homework_1
 {
@@ -6,7 +7,9 @@ namespace homework_1
     {
         static void Main(string[] args)
         {
-            new Transport().Execute(new []{"A", "B"});
+            var input = args[0].Select(c => c.ToString()).ToArray();
+            var result = new Transport().Execute(input);
+            Console.WriteLine(result);
         }
     }
 }
