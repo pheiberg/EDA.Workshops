@@ -2,6 +2,6 @@ namespace homework_1
 {
     public interface IRouter
     {
-        Location Route(string goods);
+        Location Route(Cargo cargo);
     }
 }

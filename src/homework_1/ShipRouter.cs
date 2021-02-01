@@ -9,7 +9,7 @@ namespace homework_1
             _a = a;
         }
         
-        public Location Route(string goods)
+        public Location Route(Cargo goods)
         {
             return goods == null ? null : _a;
         }

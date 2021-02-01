@@ -11,9 +11,9 @@ namespace homework_1
             _b = b;
         }
         
-        public Location Route(string goods)
+        public Location Route(Cargo goods)
         {
-            return goods switch
+            return goods.Destination switch
             {
                 null => null,
                 "A" => _port,
